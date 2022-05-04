@@ -26,10 +26,11 @@ class RequestHandler(BaseHTTPRequestHandler):
             params = parse_qs(urlparse(self.path).query)
             if 'id' in params:
                 id = str(params['id'][0])
-                self.send_response(200)
-                self.end_headers()
                 database = DataStorage()
+                print(database.get_name_by_id(id))
                 if database.get_name_by_id(id):
+                    self.send_response(200)
+                    self.end_headers()
                     print(database.get_name_by_id(id))
                     with open(database.get_name_by_id(id)[0][0], mode="rb") as body:
                         content = body.read()
