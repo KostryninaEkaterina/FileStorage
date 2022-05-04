@@ -31,7 +31,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 database = DataStorage()
                 if database.get_name_by_id(id):
                     print(database.get_name_by_id(id))
-                    with open(id, mode="rb") as body:
+                    with open(database.get_name_by_id(id)[0][0], mode="rb") as body:
                         content = body.read()
                         self.wfile.write(content)
                 else:
