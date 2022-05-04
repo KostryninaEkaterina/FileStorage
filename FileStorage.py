@@ -28,12 +28,18 @@ class RequestHandler(BaseHTTPRequestHandler):
                 id = str(params['id'][0])
                 self.send_response(200)
                 self.end_headers()
-                with open(id, mode="rb") as body:
-                    content = body.read()
-                    self.wfile.write(content)
+                database = DataStorage()
+                if database.get_name_by_id(id):
+                    print(database.get_name_by_id(id))
+                    with open(id, mode="rb") as body:
+                        content = body.read()
+                        self.wfile.write(content)
+                else:
+                    self.send_response(404)
+                    self.end_headers()
+                    self.wfile.write(str('файл не существует').encode('utf-8'))
             else:
                 self.send_response(400)
-                # self.send_header('Content-Type', 'application/json')
                 self.end_headers()
                 self.wfile.write(str('отсутствуют условия').encode('utf-8'))
 
@@ -71,7 +77,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 print('запись нового файла')
                 database.save_in_table(file_dict)
             print(self.path)
-            with open(id, mode="wb") as file:
+            with open(name, mode="wb") as file:
                 file.write(body)
             self.send_response(201)
             self.send_header('Content-type', 'multipart/form-data')
