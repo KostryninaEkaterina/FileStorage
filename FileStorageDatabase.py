@@ -57,11 +57,9 @@ class DataStorage:
         request = 'SELECT * FROM ' + self._db_name
         self.cursor.execute(request)
         result = self.cursor.fetchall()
-        print(result)
-        # print(self._create_list_of_dict(result))
         return self._create_list_of_dict(result)
 
-    def delete(self, params):
+    def delete(self, params) -> int:
         self._make_table()
         list_data = self.loading_by_params(params)
         request = 'DELETE from ' + self._db_name + self._gef_where_string(params) #форматирование строк
