@@ -47,7 +47,7 @@ class DataStorage:
 
     def loading_by_params(self, params: dict) -> dict:
         self._make_table()
-        request = 'SELECT * FROM ' + self._db_name + self._gef_where_string(params)
+        request = 'SELECT * FROM ' + self._db_name + self._get_where_string(params)
         self.cursor.execute(request)
         result = self.cursor.fetchall()
         return self._create_list_of_dict(result)
@@ -62,7 +62,7 @@ class DataStorage:
     def delete(self, params) -> int:
         self._make_table()
         list_data = self.loading_by_params(params)
-        request = 'DELETE from ' + self._db_name + self._gef_where_string(params) #форматирование строк
+        request = 'DELETE from ' + self._db_name + self._get_where_string(params) #форматирование строк
         self.cursor.execute(request)
         self.connection.commit()
         return len(list_data)
@@ -80,7 +80,7 @@ class DataStorage:
             list_of_dict.append(copy.copy(table_dict))
         return list_of_dict if len(result_list) > 1 else table_dict
 
-    def _gef_where_string(self, data: dict) -> str:
+    def _get_where_string(self, data: dict) -> str:
         request_list = []
         for key, v in data.items():
             values = ", ".join("'" + elem + "'" for elem in v)
