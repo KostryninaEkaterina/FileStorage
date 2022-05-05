@@ -14,14 +14,15 @@ class RequestHandler(BaseHTTPRequestHandler):
                 database = DataStorage()
                 self.send_response(200)
                 self.end_headers()
-                self.wfile.write(str(database.loading_all()).replace("'", '"').encode('utf-8'))
+                json_obj = json.dumps(database.loading_all(), indent=4)
+                self.wfile.write(str(json_obj).encode('utf-8'))
             else:
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/json')
                 # self.send_header('Content-type', 'multipart/form-data')
                 self.end_headers()
                 self.wfile.write(str(params).replace("'", '"').encode('utf-8'))
-        if self.path.startswith('/api/download'):
+        elif self.path.startswith('/api/download'):
             params = parse_qs(urlparse(self.path).query)
             if 'id' in params:
                 id = str(params['id'][0])
@@ -88,8 +89,8 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.send_response(201)
                 self.send_header('Content-type', 'multipart/form-data')
                 self.end_headers()
-                # print(type(json.dump(file_dict)))
-                self.wfile.write(str(file_dict).encode('utf-8'))
+                json_obj = json.dumps([file_dict], indent=4)
+                self.wfile.write(str(json_obj).encode('utf-8'))
         else:
             self.send_response(501)
             self.end_headers()
