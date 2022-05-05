@@ -1,5 +1,6 @@
 import sqlite3
-
+from typing import List, Dict, Any
+import copy
 
 class DataStorage:
     _db_name: str = str()
@@ -21,24 +22,19 @@ class DataStorage:
         for key in data:
             valuesList.append(data[key])
         valuesList = tuple(valuesList)
-        print(valuesList)
-        # data_tuple = tuple(valuesList)
-        # print(data_tuple)
         insert = 'INSERT OR IGNORE INTO ' + self._db_name + '(id, name, tag, size, mimeType, modificationTime) VALUES(?,?,?,?,?,?)'
-        # for data_dict in data:    data: list[dict] или data: dict ?...
-
         self.cursor.execute(
             insert,
             valuesList
         )
         self.connection.commit()
 
-    def loading_by_id(self, id: str) -> dict:
-        self._make_table()
-        request = 'SELECT * FROM ' + self._db_name + ' WHERE id =' + id
-        self.cursor.execute(request)
-        result = self.cursor.fetchall()
-        return self._create_list_of_dict(result)
+    # def loading_by_id(self, id: str) -> list[dict]:
+    #     self._make_table()
+    #     request = 'SELECT * FROM ' + self._db_name + ' WHERE id =' + id
+    #     self.cursor.execute(request)
+    #     result = self.cursor.fetchall()
+    #     return self._create_list_of_dict(result)
 
     def get_name_by_id(self, id:str):
         self._make_table()
@@ -47,25 +43,24 @@ class DataStorage:
         result = self.cursor.fetchall()
         return result
 
-    def loading_by_name(self, name: str) -> dict:
+    def loading_by_params(self, params: dict) -> dict:
         self._make_table()
-        request = 'SELECT * FROM ' + self._db_name + ' WHERE name =' + name
+        request = 'SELECT * FROM ' + self._db_name + self._gef_where_string(params)
+        print(request)
         self.cursor.execute(request)
         result = self.cursor.fetchall()
         print(result)
-        table_dict = {}
-        for elem in result:
-            k, v = elem[0], elem[1]
-            table_dict[k] = v
-        return table_dict
 
-    def loading_all(self) -> dict:
+        return self._create_list_of_dict(result)
+
+    def loading_all(self) -> List[Dict[str, Any]]:
         self._make_table()
         request = 'SELECT * FROM ' + self._db_name
         self.cursor.execute(request)
         result = self.cursor.fetchall()
+        print(result)
+        # print(self._create_list_of_dict(result))
         return self._create_list_of_dict(result)
-
 
     def delete(self, id: str):
         self._make_table()
@@ -83,8 +78,19 @@ class DataStorage:
             table_dict['size'] = elem[3]
             table_dict['mimeType'] = elem[4]
             table_dict['modificationTime'] = elem[5]
-            list_of_dict.append(table_dict)
+            list_of_dict.append(copy.copy(table_dict))
         return list_of_dict
+
+    def _gef_where_string(self, data: dict) -> str:
+        request_list = []
+        for key, v in data.items():
+            values = ", ".join("'" + elem + "'" for elem in v)
+            request = key + ' IN(' + values + ')'
+            request_list.append(request)
+        where_str = ' WHERE ' + ' AND '.join(request_list)
+        print(where_str)
+        return where_str
+
 
     def update(self, data: dict):
         self._make_table()

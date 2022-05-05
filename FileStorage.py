@@ -15,13 +15,20 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.end_headers()
                 json_obj = json.dumps(database.loading_all(), indent=4)
+                print(database.loading_all())
                 self.wfile.write(str(json_obj).encode('utf-8'))
             else:
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/json')
                 # self.send_header('Content-type', 'multipart/form-data')
                 self.end_headers()
-                self.wfile.write(str(params).replace("'", '"').encode('utf-8'))
+                params_dict = {}
+                for k, v in params.items():
+                    if k in ['id', 'name', 'tag', 'size', 'mimeType', 'modificationTime']:
+                        params_dict[k] = v
+                data_base = DataStorage()
+                print(data_base.loading_by_params(params_dict))
+                self.wfile.write(str(params_dict).replace("'", '"').encode('utf-8'))
         elif self.path.startswith('/api/download'):
             params = parse_qs(urlparse(self.path).query)
             if 'id' in params:
