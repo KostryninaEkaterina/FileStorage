@@ -48,11 +48,8 @@ class DataStorage:
     def loading_by_params(self, params: dict) -> dict:
         self._make_table()
         request = 'SELECT * FROM ' + self._db_name + self._gef_where_string(params)
-        print(request)
         self.cursor.execute(request)
         result = self.cursor.fetchall()
-        print(result)
-
         return self._create_list_of_dict(result)
 
     def loading_all(self) -> List[Dict[str, Any]]:
@@ -83,7 +80,7 @@ class DataStorage:
             table_dict['mimeType'] = elem[4]
             table_dict['modificationTime'] = elem[5]
             list_of_dict.append(copy.copy(table_dict))
-        return list_of_dict
+        return list_of_dict if len(result_list) > 1 else table_dict
 
     def _gef_where_string(self, data: dict) -> str:
         request_list = []
