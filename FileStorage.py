@@ -1,8 +1,8 @@
-
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs, urlparse
 import magic
 from FileStorageDatabase import DataStorage
+import json
 
 class RequestHandler(BaseHTTPRequestHandler):
 
@@ -13,6 +13,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             if ('id' or 'name' or 'tag' or 'size' or 'mimeType' or 'modificationTime') not in params:
                 database = DataStorage()
                 self.send_response(200)
+                self.end_headers()
                 self.wfile.write(str(database.loading_all()).replace("'", '"').encode('utf-8'))
             else:
                 self.send_response(200)
@@ -35,19 +36,24 @@ class RequestHandler(BaseHTTPRequestHandler):
                         self.wfile.write(content)
                 else:
                     self.send_response(404)
+                    self.end_headers()
                     self.wfile.write(str('файл не существует').encode('utf-8'))
             else:
                 self.send_response(400)
+                self.end_headers()
                 self.wfile.write(str('отсутствуют условия').encode('utf-8'))
         else:
             self.send_response(501)
+            self.end_headers()
             self.wfile.write(str('Not Implemented').encode('utf-8'))
 
     def do_POST(self):
         if self.path.startswith('/api/upload'):
             content_length = int(self.headers['Content-Length'])
+            print(content_length)
             if content_length == 0:
                 self.send_response(400)
+                self.end_headers()
                 self.wfile.write(str("Запрос без файла").encode('utf-8'))
             else:
                 content_length = int(self.headers['Content-Length'])
@@ -82,9 +88,11 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.send_response(201)
                 self.send_header('Content-type', 'multipart/form-data')
                 self.end_headers()
+                # print(type(json.dump(file_dict)))
                 self.wfile.write(str(file_dict).encode('utf-8'))
         else:
             self.send_response(501)
+            self.end_headers()
             self.wfile.write(str('Not Implemented').encode('utf-8'))
 
     def do_DELETE(self):
@@ -99,6 +107,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 print(id)
         else:
             self.send_response(501)
+            self.end_headers()
             self.wfile.write(str('Not Implemented').encode('utf-8'))
 
 
