@@ -59,7 +59,6 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(str("Запрос без файла").encode('utf-8'))
             else:
-                content_length = int(self.headers['Content-Length'])
                 body = self.rfile.read(content_length)
                 mimeType = magic.from_buffer(body, mime=True)
                 params = parse_qs(urlparse(self.path).query)
