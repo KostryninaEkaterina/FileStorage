@@ -74,7 +74,6 @@ class RequestHandler(BaseHTTPRequestHandler):
                     'size': content_length,
                     'mimeType': mimeType,
                     'modificationTime': modificationTime
-
                 }
                 database = DataStorage()
                 if database.loading_by_id(id):
