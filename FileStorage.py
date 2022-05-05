@@ -27,8 +27,8 @@ class RequestHandler(BaseHTTPRequestHandler):
                     if k in ['id', 'name', 'tag', 'size', 'mimeType', 'modificationTime']:
                         params_dict[k] = v
                 data_base = DataStorage()
-                print(data_base.loading_by_params(params_dict))
-                self.wfile.write(str(params_dict).replace("'", '"').encode('utf-8'))
+                json_obj = json.dumps(data_base.loading_by_params(params_dict), indent=4)
+                self.wfile.write(str(json_obj).encode('utf-8'))
         elif self.path.startswith('/api/download'):
             params = parse_qs(urlparse(self.path).query)
             if 'id' in params:

@@ -2,6 +2,7 @@ import sqlite3
 from typing import List, Dict, Any
 import copy
 
+
 class DataStorage:
     _db_name: str = str()
 
@@ -22,19 +23,13 @@ class DataStorage:
         for key in data:
             valuesList.append(data[key])
         valuesList = tuple(valuesList)
-        insert = 'INSERT OR IGNORE INTO ' + self._db_name + '(id, name, tag, size, mimeType, modificationTime) VALUES(?,?,?,?,?,?)'
+        insert = 'INSERT OR IGNORE INTO ' + self._db_name\
+                 + '(id, name, tag, size, mimeType, modificationTime) VALUES(?,?,?,?,?,?)'
         self.cursor.execute(
             insert,
             valuesList
         )
         self.connection.commit()
-
-    # def loading_by_id(self, id: str) -> list[dict]:
-    #     self._make_table()
-    #     request = 'SELECT * FROM ' + self._db_name + ' WHERE id =' + id
-    #     self.cursor.execute(request)
-    #     result = self.cursor.fetchall()
-    #     return self._create_list_of_dict(result)
 
     def get_name_by_id(self, id:str):
         self._make_table()
@@ -88,9 +83,7 @@ class DataStorage:
             request = key + ' IN(' + values + ')'
             request_list.append(request)
         where_str = ' WHERE ' + ' AND '.join(request_list)
-        print(where_str)
         return where_str
-
 
     def update(self, data: dict):
         self._make_table()
