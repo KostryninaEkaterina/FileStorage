@@ -111,8 +111,18 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(str("Запрос без параметров").replace("'", '"').encode('utf-8'))
             else:
-                id = params['id']
-                print(id)
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                # self.send_header('Content-type', 'multipart/form-data')
+                self.end_headers()
+                params_dict = {}
+                for k, v in params.items():
+                    if k in ['id', 'name', 'tag', 'size', 'mimeType', 'modificationTime']:
+                        params_dict[k] = v
+                data_base = DataStorage()
+                count = data_base.delete(params_dict)
+                result = str(count) + ' files deleted'
+                self.wfile.write(result.encode('utf-8'))
         else:
             self.send_response(501)
             self.end_headers()

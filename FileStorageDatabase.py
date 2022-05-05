@@ -57,11 +57,13 @@ class DataStorage:
         # print(self._create_list_of_dict(result))
         return self._create_list_of_dict(result)
 
-    def delete(self, id: str):
+    def delete(self, params):
         self._make_table()
-        request = 'DELETE from ' + self._db_name + ' WHERE id = ' + id  # форматирование строк
+        list_data = self.loading_by_params(params)
+        request = 'DELETE from ' + self._db_name + self._gef_where_string(params) #форматирование строк
         self.cursor.execute(request)
         self.connection.commit()
+        return len(list_data)
 
     def _create_list_of_dict(self, result_list: list):
         list_of_dict = []
