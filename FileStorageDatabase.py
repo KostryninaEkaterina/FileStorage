@@ -36,7 +36,7 @@ class DataStorage:
         request = 'SELECT * FROM ' + self._db_name + ' WHERE id =' + id
         self.cursor.execute(request)
         result = self.cursor.fetchall()
-        return self._create_list_of_dict(result)
+        return self._create_list_of_dict(result) if result else result
 
     def get_name_by_id(self, id:str):
         self._make_table()

@@ -63,7 +63,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 mimeType = magic.from_buffer(body, mime=True)
                 params = parse_qs(urlparse(self.path).query)
                 modificationTime = self.log_date_time_string()
-                id = str(params['id'][0]) if 'id' in params else ''
+                id = str(params['id'][0]) if 'id' in params else '20000000000000000'
                 name = str(params['name'][0]) if 'name' in params else id
                 tag = str(params['tag'][0]) if 'tag' in params else ''
                 file_dict = {
