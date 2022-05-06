@@ -65,7 +65,7 @@ class DataStorage:
         request = 'DELETE from ' + self._db_name + self._get_where_string(params) #форматирование строк
         self.cursor.execute(request)
         self.connection.commit()
-        return len(list_data)
+        return len(list_data) if type(list_data) == list else 1
 
     def _create_list_of_dict(self, result_list: list):
         list_of_dict = []
