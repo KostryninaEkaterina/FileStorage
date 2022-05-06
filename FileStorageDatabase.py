@@ -65,7 +65,7 @@ class DataStorage:
         request = 'DELETE from ' + self._db_name + self._get_where_string(params) #форматирование строк
         self.cursor.execute(request)
         self.connection.commit()
-        return len(list_data) if type(list_data) == list else 1
+        return len(list_data)
 
     def _create_list_of_dict(self, result_list: list):
         list_of_dict = []
@@ -78,7 +78,7 @@ class DataStorage:
             table_dict['mimeType'] = elem[4]
             table_dict['modificationTime'] = elem[5]
             list_of_dict.append(copy.copy(table_dict))
-        return list_of_dict if len(result_list) > 1 else table_dict
+        return list_of_dict
 
     def _get_where_string(self, data: dict) -> str:
         request_list = []
