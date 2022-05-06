@@ -47,14 +47,14 @@ class DataStorage:
 
     def loading_by_params(self, params: dict) -> dict:
         self._make_table()
-        request = 'SELECT * FROM ' + self._db_name + self._get_where_string(params)
+        request = 'SELECT * FROM ' + self._db_name + self._get_where_string(params) + ' ORDER BY id'
         self.cursor.execute(request)
         result = self.cursor.fetchall()
         return self._create_list_of_dict(result)
 
     def loading_all(self) -> List[Dict[str, Any]]:
         self._make_table()
-        request = 'SELECT * FROM ' + self._db_name
+        request = 'SELECT * FROM ' + self._db_name + ' ORDER BY id'
         self.cursor.execute(request)
         result = self.cursor.fetchall()
         return self._create_list_of_dict(result)
