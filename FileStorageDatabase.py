@@ -80,7 +80,11 @@ class DataStorage:
             list_of_dict.append(copy.copy(table_dict))
         return list_of_dict
 
-    def _get_where_string(self, data: dict) -> str:
+    def _get_where_string(self, params: dict) -> str:
+        data = {}
+        for k, v in params.items():
+            if k in ['id', 'name', 'tag', 'size', 'mimeType', 'modificationTime']:
+                data[k] = v
         request_list = []
         for key, v in data.items():
             values = ", ".join("'" + elem + "'" for elem in v)

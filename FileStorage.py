@@ -22,12 +22,8 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/json')
                 self.end_headers()
-                params_dict = {}
-                for k, v in params.items():
-                    if k in ['id', 'name', 'tag', 'size', 'mimeType', 'modificationTime']:
-                        params_dict[k] = v
                 data_base = DataStorage()
-                json_obj = json.dumps(data_base.loading_by_params(params_dict), indent=4)
+                json_obj = json.dumps(data_base.loading_by_params(params), indent=4)
                 self.wfile.write(json_obj.encode('utf-8'))
         elif self.path.startswith('/api/download'):
             params = parse_qs(urlparse(self.path).query)
@@ -104,12 +100,8 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/json')
                 self.end_headers()
-                params_dict = {}
-                for k, v in params.items():
-                    if k in ['id', 'name', 'tag', 'size', 'mimeType', 'modificationTime']:
-                        params_dict[k] = v
                 data_base = DataStorage()
-                count = data_base.delete(params_dict)
+                count = data_base.delete(params)
                 result = f"{count} files deleted"
                 self.wfile.write(result.encode('utf-8'))
         else:
