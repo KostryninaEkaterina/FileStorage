@@ -1,6 +1,6 @@
+import copy
 import sqlite3
 from typing import List, Dict, Any
-import copy
 
 
 class DataStorage:
@@ -23,8 +23,8 @@ class DataStorage:
         for key in data:
             valuesList.append(data[key])
         valuesList = tuple(valuesList)
-        insert = 'INSERT OR IGNORE INTO ' + self._db_name\
-                 + '(id, name, tag, size, mimeType, modificationTime) VALUES(?,?,?,?,?,?)'
+        insert = f'INSERT OR IGNORE INTO {self._db_name} ' \
+                 f'(id, name, tag, size, mimeType, modificationTime) VALUES(?,?,?,?,?,?)'
         self.cursor.execute(
             insert,
             valuesList
@@ -33,28 +33,28 @@ class DataStorage:
 
     def loading_by_id(self, id: str):
         self._make_table()
-        request = 'SELECT * FROM ' + self._db_name + ' WHERE id =' + id
+        request = f'SELECT * FROM {self._db_name } WHERE id = {id}'
         self.cursor.execute(request)
         result = self.cursor.fetchall()
         return self._create_list_of_dict(result) if result else result
 
-    def get_name_by_id(self, id:str):
+    def get_name_by_id(self, id: str):
         self._make_table()
-        request = 'SELECT name FROM ' + self._db_name + ' WHERE id =' + id
+        request = f'SELECT name FROM {self._db_name} WHERE id = {id} ORDER BY name'
         self.cursor.execute(request)
         result = self.cursor.fetchall()
         return result
 
     def loading_by_params(self, params: dict) -> dict:
         self._make_table()
-        request = 'SELECT * FROM ' + self._db_name + self._get_where_string(params) + ' ORDER BY id'
+        request = f'SELECT * FROM {self._db_name} {self._get_where_string(params)} ORDER BY id'
         self.cursor.execute(request)
         result = self.cursor.fetchall()
         return self._create_list_of_dict(result)
 
     def loading_all(self) -> List[Dict[str, Any]]:
         self._make_table()
-        request = 'SELECT * FROM ' + self._db_name + ' ORDER BY id'
+        request = f'SELECT * FROM {self._db_name} ORDER BY id'
         self.cursor.execute(request)
         result = self.cursor.fetchall()
         return self._create_list_of_dict(result)
@@ -62,7 +62,7 @@ class DataStorage:
     def delete(self, params) -> int:
         self._make_table()
         list_data = self.loading_by_params(params)
-        request = 'DELETE from ' + self._db_name + self._get_where_string(params) #форматирование строк
+        request = f'DELETE from {self._db_name} {self._get_where_string(params)}'
         self.cursor.execute(request)
         self.connection.commit()
         return len(list_data)
