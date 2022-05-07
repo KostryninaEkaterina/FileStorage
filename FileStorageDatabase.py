@@ -12,8 +12,8 @@ class DataStorage:
         self.cursor = self.connection.cursor()
 
     def _make_table(self):
-        cr_table = 'CREATE TABLE IF NOT EXISTS ' + self._db_name + \
-                   '(id TEXT, name TEXT, tag TEXT,size REAL, mimeType TEXT, modificationTime TEXT,  UNIQUE(id))'
+        cr_table = f'CREATE TABLE IF NOT EXISTS {self._db_name} ' \
+                   f'(id TEXT, name TEXT, tag TEXT,size REAL, mimeType TEXT, modificationTime TEXT,  UNIQUE(id))'
         self.cursor.execute(cr_table)
         self.connection.commit()
 
