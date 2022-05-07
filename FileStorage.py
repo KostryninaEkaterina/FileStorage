@@ -17,7 +17,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.end_headers()
                 json_obj = json.dumps(database.loading_all(), indent=4)
-                self.wfile.write(str(json_obj).encode('utf-8'))
+                self.wfile.write(json_obj.encode('utf-8'))
             else:
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/json')
