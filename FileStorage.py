@@ -1,8 +1,10 @@
+import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs, urlparse
+
 import magic
+
 from FileStorageDatabase import DataStorage
-import json
 
 
 class RequestHandler(BaseHTTPRequestHandler):
@@ -57,7 +59,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             if content_length == 0:
                 self.send_response(400)
                 self.end_headers()
-                self.wfile.write(str("Запрос без файла").encode('utf-8'))
+                self.wfile.write("Запрос без файла".encode('utf-8'))
             else:
                 body = self.rfile.read(content_length)
                 mimeType = magic.from_buffer(body, mime=True)
@@ -108,12 +110,12 @@ class RequestHandler(BaseHTTPRequestHandler):
                         params_dict[k] = v
                 data_base = DataStorage()
                 count = data_base.delete(params_dict)
-                result = str(count) + ' files deleted'
+                result = f"{count} files deleted"
                 self.wfile.write(result.encode('utf-8'))
         else:
             self.send_response(501)
             self.end_headers()
-            self.wfile.write(str('Not Implemented').encode('utf-8'))
+            self.wfile.write('Not Implemented'.encode('utf-8'))
 
 
 server = HTTPServer(("127.0.0.1", 2207), RequestHandler)
