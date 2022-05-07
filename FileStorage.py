@@ -53,18 +53,17 @@ class RequestHandler(BaseHTTPRequestHandler):
         if self.path.startswith('/api/upload'):
             content_length = int(self.headers['Content-Length'])
             if content_length == 0:
-                self.send_response(400)
-                self.end_headers()
-                self.wfile.write("Запрос без файла".encode('utf-8'))
+                body = open('blank.txt', mode='rb').read()
+                mimeType = None
             else:
                 body = self.rfile.read(content_length)
                 mimeType = magic.from_buffer(body, mime=True)
-                params = parse_qs(urlparse(self.path).query)
-                modificationTime = self.log_date_time_string()
-                id = str(params['id'][0]) if 'id' in params else '20000000000000000'
-                name = str(params['name'][0]) if 'name' in params else id
-                tag = str(params['tag'][0]) if 'tag' in params else ''
-                file_dict = {
+            params = parse_qs(urlparse(self.path).query)
+            modificationTime = self.log_date_time_string()
+            id = str(params['id'][0]) if 'id' in params else '2000000000000000000000000'
+            name = str(params['name'][0]) if 'name' in params else id
+            tag = str(params['tag'][0]) if 'tag' in params else ''
+            file_dict = {
                     'id': id,
                     'name': name,
                     'tag': tag,
@@ -72,18 +71,18 @@ class RequestHandler(BaseHTTPRequestHandler):
                     'mimeType': mimeType,
                     'modificationTime': modificationTime
                 }
-                database = DataStorage()
-                if database.loading_by_id(id):
-                    database.update(file_dict)
-                else:
-                    database.save_in_table(file_dict)
-                with open(id, mode="wb") as file:
-                    file.write(body)
-                self.send_response(201)
-                self.send_header('Content-type', 'multipart/form-data')
-                self.end_headers()
-                json_obj = json.dumps([file_dict], indent=4)
-                self.wfile.write(json_obj.encode('utf-8'))
+            database = DataStorage()
+            if database.loading_by_id(id):
+                database.update(file_dict)
+            else:
+                database.save_in_table(file_dict)
+            with open(id, mode="wb") as file:
+                file.write(body)
+            self.send_response(201)
+            self.send_header('Content-type', 'multipart/form-data')
+            self.end_headers()
+            json_obj = json.dumps([file_dict], indent=4)
+            self.wfile.write(json_obj.encode('utf-8'))
         else:
             self.send_response(501)
             self.end_headers()
