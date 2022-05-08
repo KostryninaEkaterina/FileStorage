@@ -30,7 +30,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             if 'id' in params:
                 id = str(params['id'][0])
                 database = DataStorage()
-                if database.get_name_by_id(id):
+                if database.loading_by_id(id):
                     self.send_response(200)
                     self.end_headers()
                     with open(id, mode="rb") as body:

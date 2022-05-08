@@ -36,14 +36,7 @@ class DataStorage:
         request = f'SELECT * FROM {self._db_name } WHERE id = {id}'
         self.cursor.execute(request)
         result = self.cursor.fetchall()
-        return self._create_list_of_dict(result) if result else result
-
-    def get_name_by_id(self, id: str):
-        self._make_table()
-        request = f'SELECT name FROM {self._db_name} WHERE id = {id} ORDER BY name'
-        self.cursor.execute(request)
-        result = self.cursor.fetchall()
-        return result
+        return self._create_list_of_dict(result)
 
     def loading_by_params(self, params: dict) -> dict:
         self._make_table()
