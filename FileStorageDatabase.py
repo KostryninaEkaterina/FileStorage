@@ -100,3 +100,12 @@ class DataStorage:
                   data['id'])
         self.cursor.execute(sql_update_query, params)
         self.connection.commit()
+
+    def delete_all(self):
+        """Use for tests"""
+        self._make_table()
+        self.cursor.execute(f'DELETE from {self._db_name}')
+        self.connection.commit()
+
+
+
