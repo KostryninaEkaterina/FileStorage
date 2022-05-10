@@ -8,7 +8,6 @@ from urllib.parse import urljoin
 from requests import request, Response
 from FileStorageDatabase import DataStorage
 
-# from requests.compat import urljoin
 
 LOGGER = getLogger('FileStorageConnector')
 
@@ -31,7 +30,7 @@ _DOWNLOAD_END_POINT = '/api/download'
 REST_TYPE_MAPPING = {
     _UPLOAD_END_POINT: 'post',
     _GET_END_POINT: 'get',
-    _DELETE_END_POINT: 'delete',  # или post?..
+    _DELETE_END_POINT: 'delete',
     _DOWNLOAD_END_POINT: 'get'
 }
 _UNKNOWN_MIME_TYPE = 'application/octet-stream'
