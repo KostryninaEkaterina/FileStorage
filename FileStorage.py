@@ -1,7 +1,7 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs, urlparse
-
+import datetime
 import magic
 
 from FileStorageDatabase import DataStorage
@@ -59,7 +59,8 @@ class RequestHandler(BaseHTTPRequestHandler):
                 body = self.rfile.read(content_length)
                 mimeType = magic.from_buffer(body, mime=True)
             params = parse_qs(urlparse(self.path).query)
-            modificationTime = self.log_date_time_string()
+            # modificationTime = self.log_date_time_string()
+            modificationTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             id = str(params['id'][0]) if 'id' in params else '2000000000000000000000000'
             name = str(params['name'][0]) if 'name' in params else id
             tag = str(params['tag'][0]) if 'tag' in params else ''
