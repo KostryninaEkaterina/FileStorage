@@ -95,7 +95,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             if ('id' or 'name' or 'tag' or 'size' or 'mimeType' or 'modificationTime') not in params:
                 self.send_response(400)
                 self.end_headers()
-                self.wfile.write(str("Запрос без параметров").replace("'", '"').encode('utf-8'))
+                self.wfile.write("отсутствуют условия".encode('utf-8'))
             else:
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/json')
