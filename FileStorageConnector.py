@@ -91,12 +91,14 @@ class FileConnector:
         data.delete_all()
 
     def get_without_params(self):
-        response = self._get()['content']
-        code = self._get()['status-code']
-        return {'content': loads(response), 'status-code': code}
+        response = self._get()
+        content = response['content']
+        code = response['status-code']
+        return {'content': loads(content), 'status-code': code}
 
     def get_time_now(self):
-        modificationTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        now = datetime.now()
+        modificationTime = now.strftime("%Y-%m-%d %H:%M:%S")
         return modificationTime
 
     def log_date_time_string(self) -> str:
@@ -110,7 +112,8 @@ class FileConnector:
             day, monthname[month], year, hh, mm, ss)
         return s
 
-    def delete_by_params(self, params: dict = {}):
-        response = self._delete(params)['content']
-        code = self._delete(params)['status-code']
-        return {'content': response, 'status-code': code}
+    def delete_by_params(self, params: dict = None):
+        response = self._delete(params)
+        content = response['content']
+        code = response['status-code']
+        return {'content': content, 'status-code': code}

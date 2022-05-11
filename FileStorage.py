@@ -1,4 +1,5 @@
 import json
+import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs, urlparse
 import datetime
@@ -12,7 +13,11 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith('/api/get'):
             params = parse_qs(urlparse(self.path).query)
-            if ('id' or 'name' or 'tag' or 'size' or 'mimeType' or 'modificationTime') not in params:
+            count = 0
+            for k, v in params.items():
+                if k in ['id', 'name', 'tag', 'size', 'mimeType', 'modificationTime']:
+                    count += 1
+            if count == 0:
                 database = DataStorage()
                 self.send_response(200)
                 self.end_headers()
@@ -60,7 +65,8 @@ class RequestHandler(BaseHTTPRequestHandler):
                 mimeType = magic.from_buffer(body, mime=True)
             params = parse_qs(urlparse(self.path).query)
             # modificationTime = self.log_date_time_string()
-            modificationTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            now = datetime.datetime.now()
+            modificationTime = now.strftime("%Y-%m-%d %H:%M:%S")
             id = str(params['id'][0]) if 'id' in params else '2000000000000000000000000'
             name = str(params['name'][0]) if 'name' in params else id
             tag = str(params['tag'][0]) if 'tag' in params else ''
@@ -92,7 +98,11 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_DELETE(self):
         if self.path.startswith('/api/delete'):
             params = parse_qs(urlparse(self.path).query)
-            if ('id' or 'name' or 'tag' or 'size' or 'mimeType' or 'modificationTime') not in params:
+            count = 0
+            for k, v in params.items():
+                if k in ['id', 'name', 'tag', 'size', 'mimeType', 'modificationTime']:
+                    count += 1
+            if count == 0:
                 self.send_response(400)
                 self.end_headers()
                 self.wfile.write("отсутствуют условия".encode('utf-8'))
