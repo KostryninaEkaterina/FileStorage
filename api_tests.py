@@ -1,6 +1,6 @@
 from unittest.case import TestCase
 
-from requests import HTTPError
+from requests import HTTPError, Response, request
 
 from FileStorageConnector import FileConnector, Metadata
 
@@ -87,6 +87,16 @@ class EmptyStorageTest(TestCase):
         self.assertEqual(self.fsc.get_by_params(dict(id='5', name='new_file.txt'))['content'],
                          self.fsc.get_without_params()['content'])
 
+    def test_upload_without_data_and_params(self):
+        self.fsc.upload()
+        self.assertEqual(self.fsc.get_by_params(dict(id='54321', name='54321'))['content'],
+                         self.fsc.get_without_params()['content'])
+
+    def test_upload_without_name(self):
+        self.fsc.upload(meta=Metadata(id='8'))
+        self.assertEqual(self.fsc.get_by_params(dict(id='8', name='8'))['content'],
+                         self.fsc.get_without_params()['content'])
+
     def test_download_by_id(self):
         with self.assertRaises(HTTPError) as dl:
             self.fsc.download_by_params(dict(id=0))
@@ -144,6 +154,7 @@ class SingleFileStorageTest(TestCase):
             self.fsc.delete_by_id(elem['id'])
 
     def test_get(self):
+        #ToDo сравнивать по элементам, для времени сделать сравнение с timedelta 5 сек
         result = self.fsc.get_without_params()
         content, code = result['content'], result['status-code']
         self.assertEqual(content, [(dict(id='5', name='new_file.txt',
@@ -252,6 +263,17 @@ class FullFileStorageTest(TestCase):
                                    ])
         self.assertEqual(code, 200)
 
+    def test_get_by_params(self):
+        result = self.fsc.get_by_params(dict(id=['1', '2', '3', '4'],
+                                             name='new_file.txt',
+                                             tag='test2'))
+        content, code = result['content'], result['status-code']
+        self.assertEqual(content, [(dict(id='4', name='new_file.txt', tag='test2',
+                                         size=6.0, mimeType='text/plain',
+                                         modificationTime=self.fsc.get_time_now()))
+                                   ])
+        self.assertEqual(code, 200)
+
     def test_get_by_2id_and_name(self):
         result = self.fsc.get_by_params(dict(id=['1', '2'], name='new_file1.txt'))
         content, code = result['content'], result['status-code']
@@ -280,8 +302,27 @@ class FullFileStorageTest(TestCase):
         self.assertEqual(content, '2 files deleted')
         self.assertEqual(code, 200)
 
+    def test_delete_by_name_and_tag(self):
+        result = self.fsc.delete_by_params(dict(name='new_file.txt', tag='test2'))
+        content, code = result['content'], result['status-code']
+        self.assertEqual(content, '1 files deleted')
+        self.assertEqual(code, 200)
 
 
+class NotExistingEndPoint(TestCase):
+    def test_post(self):
+        response = request(method='post', url='http://127.0.0.1:2207/api/cats')
+        self.assertEqual(response.content.decode('utf-8'), "Not Implemented")
+        self.assertEqual(response.status_code, 501)
 
+    def test_delete(self):
+        response = request(method='delete', url='http://127.0.0.1:2207/api/cats')
+        self.assertEqual(response.content.decode('utf-8'), "Not Implemented")
+        self.assertEqual(response.status_code, 501)
+
+    def test_get(self):
+        response = request(method='get', url='http://127.0.0.1:2207/api/cats')
+        self.assertEqual(response.content.decode('utf-8'), "Not Implemented")
+        self.assertEqual(response.status_code, 501)
 
 
