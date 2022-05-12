@@ -119,6 +119,7 @@ class EmptyStorageTest(TestCase):
 class SingleFileStorageTest(TestCase):
     """
     Single File
+     data = 'Hello!'
     [
     {
         "id": "5",
@@ -213,6 +214,73 @@ class SingleFileStorageTest(TestCase):
         content, code = result['content'], result['status-code']
         self.assertEqual(content, 'Hello!')
         self.assertEqual(code, 200)
+
+
+class FullFileStorageTest(TestCase):
+    def __init__(self, methodName: str = ...):
+        super().__init__(methodName)
+        self.fsc = FileConnector('http://127.0.0.1:2207')
+
+    def setUp(self) -> None:
+        self.fsc.upload('Hello!', Metadata(id='1', name='new_file.txt', tag='test1'))
+        self.fsc.upload('Hello!', Metadata(id='2', name='new_file1.txt', tag='test2'))
+        self.fsc.upload('Hello!', Metadata(id='3', name='new_file2.txt', tag='test1'))
+        self.fsc.upload('Hello!', Metadata(id='4', name='new_file.txt', tag='test2'))
+
+    def tearDown(self) -> None:
+        result = self.fsc.get_without_params()['content']
+        for elem in result:
+            self.fsc.delete_by_id(elem['id'])
+
+    def test_get_by_id(self):
+        result = self.fsc.get_by_params(dict(id='1'))
+        content, code = result['content'], result['status-code']
+        self.assertEqual(content, [(dict(id='1', name='new_file.txt', tag='test1',
+                                         size=6.0, mimeType='text/plain',
+                                         modificationTime=self.fsc.get_time_now()))])
+        self.assertEqual(code, 200)
+
+    def test_get_by_2id(self):
+        result = self.fsc.get_by_params(dict(id=['1', '2']))
+        content, code = result['content'], result['status-code']
+        self.assertEqual(content, [(dict(id='1', name='new_file.txt', tag='test1',
+                                         size=6.0, mimeType='text/plain',
+                                         modificationTime=self.fsc.get_time_now())),
+                                   (dict(id='2', name='new_file1.txt', tag='test2',
+                                         size=6.0, mimeType='text/plain',
+                                         modificationTime=self.fsc.get_time_now()))
+                                   ])
+        self.assertEqual(code, 200)
+
+    def test_get_by_2id_and_name(self):
+        result = self.fsc.get_by_params(dict(id=['1', '2'], name='new_file1.txt'))
+        content, code = result['content'], result['status-code']
+        self.assertEqual(content, [(dict(id='2', name='new_file1.txt', tag='test2',
+                                         size=6.0, mimeType='text/plain',
+                                         modificationTime=self.fsc.get_time_now()))])
+        self.assertEqual(code, 200)
+
+    def test_delete_4id(self):
+        result = self.fsc.delete_by_params(dict(id=['1', '2', '3', '4']))
+        content, code = result['content'], result['status-code']
+        self.assertEqual(content, '4 files deleted')
+        self.assertEqual(code, 200)
+
+    def test_delete_by_id_name_tag(self):
+        result = self.fsc.delete_by_params(dict(id=['1', '2', '3', '4'],
+                                                name=['new_file.txt', 'new_file1.txt'],
+                                                tag=['test1', 'test2']))
+        content, code = result['content'], result['status-code']
+        self.assertEqual(content, '3 files deleted')
+        self.assertEqual(code, 200)
+
+    def test_delete_by_tag(self):
+        result = self.fsc.delete_by_params(dict(tag=['test2']))
+        content, code = result['content'], result['status-code']
+        self.assertEqual(content, '2 files deleted')
+        self.assertEqual(code, 200)
+
+
 
 
 
