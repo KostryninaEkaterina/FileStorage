@@ -93,13 +93,13 @@ class FileConnector:
         response = self._download(params)
         content = response['content']
         code = response['status-code']
-        return {'content': loads(content), 'status-code': code}
+        return {'content': content, 'status-code': code}
 
     def download_without_params(self):
         response = self._download()
         content = response['content']
         code = response['status-code']
-        return {'content': loads(content), 'status-code': code}
+        return {'content': content, 'status-code': code}
 
     def delete_all_from_database(self) -> None:
         data = DataStorage()

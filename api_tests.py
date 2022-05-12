@@ -116,8 +116,20 @@ class EmptyStorageTest(TestCase):
         self.assertEqual(the_exception.response.content.decode('utf-8'), "отсутствуют условия")
 
 
-
 class SingleFileStorageTest(TestCase):
+    """
+    Single File
+    [
+    {
+        "id": "5",
+        "name": "new_file.txt",
+        "tag": "",
+        "size": 6.0,
+        "mimeType": "text/plain",
+        "modificationTime": time_now, format "year-month-day hour:minute:second"
+    }
+]
+    """
     def __init__(self, methodName: str = ...):
         super().__init__(methodName)
         self.fsc = FileConnector('http://127.0.0.1:2207')
@@ -138,19 +150,70 @@ class SingleFileStorageTest(TestCase):
                                          modificationTime=self.fsc.get_time_now()))])
         self.assertEqual(code, 200)
 
-    def test_get_by_id(self):
-        result = self.fsc.get_without_params()
-        print(result)
+    def test_upload_new_name(self):
+        self.fsc.upload('Hello!', Metadata(id='5', name='get.py'))
+        self.assertEqual(self.fsc.get_by_params(dict(id='5', name='get.py'))['content'],
+                         self.fsc.get_without_params()['content'])
+        self.assertEqual(self.fsc.get_by_params(dict(id='5', name='get.py'))['status-code'],
+                         self.fsc.get_without_params()['status-code'])
 
-    def test_get_by_params(self):
-        test_dict = {
-            'id': 5,
-        }
-        result = self.fsc.get_by_params(test_dict)
-        print(result)
+    def test_upload_without_data(self):
+        self.fsc.upload(meta=Metadata(id='5', name='new_file.txt'))
+        self.assertEqual(self.fsc.get_by_params(dict(id='5', name='new_file.txt'))['content'],
+                         self.fsc.get_without_params()['content'])
+        self.assertEqual(self.fsc.get_by_params(dict(id='5', name='new_file.txt'))['status-code'],
+                         self.fsc.get_without_params()['status-code'])
 
-    def test_download(self):
-        self.assertEqual(self.fsc.download_by_id('5'), 'Hello!')
+    def test_upload_new_data(self):
+        self.fsc.upload('Hello world!', Metadata(id='5', name='new_file.txt'))
+        self.assertEqual(self.fsc.get_by_params(dict(id='5', name='new_file.txt'))['content'],
+                         self.fsc.get_without_params()['content'])
+        self.assertEqual(self.fsc.get_by_params(dict(id='5', name='new_file.txt'))['status-code'],
+                         self.fsc.get_without_params()['status-code'])
 
-    def test_delete(self):
-        self.assertEqual(self.fsc.delete_by_id('5'), 200)
+    def test_delete_by_id(self):
+        result = self.fsc.delete_by_params(dict(id='5'))
+        content, code = result['content'], result['status-code']
+        self.assertEqual(content, '1 files deleted')
+        self.assertEqual(code, 200)
+
+    def test_delete_by_name(self):
+        result = self.fsc.delete_by_params(dict(name="new_file.txt"))
+        content, code = result['content'], result['status-code']
+        self.assertEqual(content, '1 files deleted')
+        self.assertEqual(code, 200)
+
+    def test_delete_by_other_id(self):
+        result = self.fsc.delete_by_params(dict(id='345'))
+        content, code = result['content'], result['status-code']
+        self.assertEqual(content, '0 files deleted')
+        self.assertEqual(code, 200)
+
+    def test_download_by_id(self):
+        result = self.fsc.download_by_params(dict(id='5'))
+        content, code = result['content'], result['status-code']
+        self.assertEqual(content, 'Hello!')
+        self.assertEqual(code, 200)
+
+    def test_download_by_parameters(self):
+        result = self.fsc.download_by_params(dict(id='5', cat='meow'))
+        content, code = result['content'], result['status-code']
+        self.assertEqual(content, 'Hello!')
+        self.assertEqual(code, 200)
+
+    def test_download_by_other_id(self):
+        with self.assertRaises(HTTPError) as dl:
+            self.fsc.download_by_params(dict(id='43434'))
+        the_exception = dl.exception
+        self.assertEqual(the_exception.response.status_code, 404)
+        self.assertEqual(the_exception.response.content.decode('utf-8'), "файл не существует")
+
+    def test_download_by_2id(self):
+        result = self.fsc.download_by_params(dict(id=['5', '6']))
+        content, code = result['content'], result['status-code']
+        self.assertEqual(content, 'Hello!')
+        self.assertEqual(code, 200)
+
+
+
+

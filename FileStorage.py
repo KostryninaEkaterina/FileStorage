@@ -67,7 +67,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             # modificationTime = self.log_date_time_string()
             now = datetime.datetime.now()
             modificationTime = now.strftime("%Y-%m-%d %H:%M:%S")
-            id = str(params['id'][0]) if 'id' in params else '2000000000000000000000000'
+            id = str(params['id'][0]) if 'id' in params else '54321'
             name = str(params['name'][0]) if 'name' in params else id
             tag = str(params['tag'][0]) if 'tag' in params else ''
             file_dict = {
