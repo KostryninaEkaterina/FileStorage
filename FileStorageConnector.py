@@ -47,6 +47,7 @@ def prepare_request(base_url, end_point):
                                      headers=headers, params=params, data=data)
         response.raise_for_status()
         return {'content': response.content.decode('utf-8'), 'status-code': response.status_code}
+
     return make_request
 
 
@@ -58,13 +59,13 @@ class FileConnector:
         self._delete = prepare_request(base_url, _DELETE_END_POINT)
         self._download = prepare_request(base_url, _DOWNLOAD_END_POINT)
 
-    def upload(self, payload, meta: Metadata = None, mime_type: str = None) -> dict:
+    def upload(self, payload=None, meta: Metadata = None, mime_type: str = None) -> dict:
         params = {k: v for k, v in meta._asdict().items() if v} if meta else {}
         content_type = mime_type or (meta and meta.mime_type) or _UNKNOWN_MIME_TYPE
 
-        response = self._upload(params, {'Content_Type': content_type}, payload)['content']
+        content = self._upload(params, {'Content_Type': content_type}, payload)['content']
         code = self._upload(params, {'Content_Type': content_type}, payload)['status-code']
-        return {'content': loads(response), 'status-code': code}
+        return {'content': loads(content), 'status-code': code}
 
     def get_by_id(self, file_id) -> List[Dict]:
         response = self._get({'id': file_id})['content']
@@ -75,26 +76,34 @@ class FileConnector:
         code = self._get(params_dict)['status-code']
         return {'content': loads(response), 'status-code': code}
 
-    def delete_by_id(self, file_id):
-        self._delete({'id': file_id})
-        return self._delete({'id': file_id})['status-code']
-
-    def delete_by_tag(self, tag) -> int:
-        self._delete({'tag': tag})
-        return self._delete({'tag': tag})['status-code']
-
-    def download_by_id(self, file_id):
-        return self._download({'id': file_id})['content']
-
-    def delete_all_from_database(self) -> None:
-        data = DataStorage()
-        data.delete_all()
-
     def get_without_params(self):
         response = self._get()
         content = response['content']
         code = response['status-code']
         return {'content': loads(content), 'status-code': code}
+
+    def delete_by_id(self, file_id):
+        self._delete({'id': file_id})
+        return self._delete({'id': file_id})['status-code']
+
+    def download_by_id(self, file_id):
+        return self._download({'id': file_id})['content']
+
+    def download_by_params(self, params: dict):
+        response = self._download(params)
+        content = response['content']
+        code = response['status-code']
+        return {'content': loads(content), 'status-code': code}
+
+    def download_without_params(self):
+        response = self._download()
+        content = response['content']
+        code = response['status-code']
+        return {'content': loads(content), 'status-code': code}
+
+    def delete_all_from_database(self) -> None:
+        data = DataStorage()
+        data.delete_all()
 
     def get_time_now(self):
         now = datetime.now()
@@ -112,8 +121,14 @@ class FileConnector:
             day, monthname[month], year, hh, mm, ss)
         return s
 
-    def delete_by_params(self, params: dict = None):
+    def delete_by_params(self, params: dict):
         response = self._delete(params)
+        content = response['content']
+        code = response['status-code']
+        return {'content': content, 'status-code': code}
+
+    def delete_without_params(self):
+        response = self._delete()
         content = response['content']
         code = response['status-code']
         return {'content': content, 'status-code': code}
