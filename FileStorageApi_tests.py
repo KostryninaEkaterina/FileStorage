@@ -10,7 +10,7 @@ class EmptyStorageTest(TestCase):
 
     def __init__(self, methodName: str = ...):
         super().__init__(methodName)
-        self.fsc = FileConnector('http://127.0.0.1:2207')
+        self.fsc = FileConnector('http://127.0.0.1:9876')
 
     def setUp(self) -> None:
         result = self.fsc.get_without_params()['content']
@@ -150,7 +150,7 @@ class SingleFileStorageTest(TestCase):
 
     def __init__(self, methodName: str = ...):
         super().__init__(methodName)
-        self.fsc = FileConnector('http://127.0.0.1:2207')
+        self.fsc = FileConnector('http://127.0.0.1:9876')
 
     def setUp(self) -> None:
         self.fsc.upload('Hello!', Metadata(id='5', name='new_file.txt'))
@@ -237,7 +237,7 @@ class SingleFileStorageTest(TestCase):
 class FullFileStorageTest(TestCase):
     def __init__(self, methodName: str = ...):
         super().__init__(methodName)
-        self.fsc = FileConnector('http://127.0.0.1:2207')
+        self.fsc = FileConnector('http://127.0.0.1:9876')
 
     def setUp(self) -> None:
         self.fsc.upload('Hello!', Metadata(id='1', name='new_file.txt', tag='test1'))
@@ -319,19 +319,19 @@ class FullFileStorageTest(TestCase):
 class NotExistingEndPoint(TestCase):
     def __init__(self, methodName: str = ...):
         super().__init__(methodName)
-        self.url = 'http://127.0.0.1:2207/api/cats'
+        self.url = 'http://127.0.0.1:9876/api/cats'
 
     def test_post(self):
         response = request(method='post', url=self.url)
-        self.assertEqual(response.content.decode('utf-8'), "Not Implemented")
+        self.assertEqual(response.raw.reason, "Not Implemented")
         self.assertEqual(response.status_code, 501)
 
     def test_delete(self):
         response = request(method='delete', url=self.url)
-        self.assertEqual(response.content.decode('utf-8'), "Not Implemented")
+        self.assertEqual(response.raw.reason, "Not Implemented")
         self.assertEqual(response.status_code, 501)
 
     def test_get(self):
         response = request(method='get', url=self.url)
-        self.assertEqual(response.content.decode('utf-8'), "Not Implemented")
+        self.assertEqual(response.raw.reason, "Not Implemented")
         self.assertEqual(response.status_code, 501)
