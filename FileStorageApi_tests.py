@@ -82,6 +82,12 @@ class EmptyStorageTest(TestCase):
         self.assertEqual(self.fsc.get_by_params(dict(id='5', name='new_file.txt'))['content'],
                          self.fsc.get_without_params()['content'])
 
+    def test_upload_file_jpg(self):
+        file = open('cat.jpg', mode='rb').read()
+        self.fsc.upload(file, Metadata(id='1', name='new_cat.jpg'))
+        self.assertEqual(self.fsc.get_by_params(dict(id='1', name='new_cat.jpg'))['content'],
+                         self.fsc.get_without_params()['content'])
+
     def test_upload_without_data(self):
         self.fsc.upload(meta=Metadata(id='5', name='new_file.txt'))
         self.assertEqual(self.fsc.get_by_params(dict(id='5', name='new_file.txt'))['content'],
