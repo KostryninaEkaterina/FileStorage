@@ -123,5 +123,5 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.wfile.write('Not Implemented'.encode('utf-8'))
 
 
-server = HTTPServer(("127.0.0.1", 2207), RequestHandler)
+server = HTTPServer(("127.0.0.1", 9876), RequestHandler)
 server.serve_forever()
