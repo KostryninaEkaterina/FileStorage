@@ -1,5 +1,6 @@
 import json
 import time
+import uuid
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs, urlparse
 import datetime
@@ -36,7 +37,13 @@ class RequestHandler(BaseHTTPRequestHandler):
                 id = str(params['id'][0])
                 database = DataStorage()
                 if database.loading_by_id(id):
+                    data = database.loading_by_id(id)
+                    print(data)
+                    print(data[0]["mimeType"])
                     self.send_response(200)
+                    self.send_header('Content-Type', data[0]["mimeType"])
+                    self.send_header('Content-Disposition: attachment; filename=', data[0]['name'])
+                    self.send_header('Content-Length', str(int(data[0]['size'])))
                     self.end_headers()
                     with open(id, mode="rb") as body:
                         content = body.read()
@@ -67,7 +74,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             # modificationTime = self.log_date_time_string()
             now = datetime.datetime.now()
             modificationTime = now.strftime("%Y-%m-%d %H:%M:%S")
-            id = str(params['id'][0]) if 'id' in params else '54321'
+            id = str(params['id'][0]) if 'id' in params else str(uuid.uuid4())
             name = str(params['name'][0]) if 'name' in params else id
             tag = str(params['tag'][0]) if 'tag' in params else ''
             file_dict = {
@@ -86,9 +93,9 @@ class RequestHandler(BaseHTTPRequestHandler):
             with open(id, mode="wb") as file:
                 file.write(body)
             self.send_response(201)
-            self.send_header('Content-type', 'multipart/form-data')
+            self.send_header('Content-Type', 'multipart/form-data')
             self.end_headers()
-            json_obj = json.dumps([file_dict], indent=4)
+            json_obj = json.dumps(file_dict, indent=4)
             self.wfile.write(json_obj.encode('utf-8'))
         else:
             self.send_response(501)
