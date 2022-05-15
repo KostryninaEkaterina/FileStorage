@@ -64,12 +64,8 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         if self.path.startswith('/api/upload'):
             content_length = int(self.headers['Content-Length'])
-            if content_length == 0:
-                body = open('blank.txt', mode='rb').read()
-                mimeType = None
-            else:
-                body = self.rfile.read(content_length)
-                mimeType = magic.from_buffer(body, mime=True)
+            body = self.rfile.read(content_length)
+            mimeType = magic.from_buffer(body, mime=True)
             params = parse_qs(urlparse(self.path).query)
             # modificationTime = self.log_date_time_string()
             now = datetime.datetime.now()

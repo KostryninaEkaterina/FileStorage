@@ -13,7 +13,7 @@ class DataStorage:
 
     def _make_table(self):
         cr_table = f'CREATE TABLE IF NOT EXISTS {self._db_name} ' \
-                   f'(id TEXT, name TEXT, tag TEXT,size REAL, mimeType TEXT, modificationTime TEXT,  UNIQUE(id))'
+                   f'(id TEXT, name TEXT, tag TEXT,size INTEGER, mimeType TEXT, modificationTime TEXT,  UNIQUE(id))'
         self.cursor.execute(cr_table)
         self.connection.commit()
 
@@ -33,12 +33,12 @@ class DataStorage:
 
     def loading_by_id(self, id: str):
         self._make_table()
-        request = f'SELECT * FROM {self._db_name } WHERE id = {id}'
+        request = f'SELECT * FROM {self._db_name } WHERE id = "{id}"'
         self.cursor.execute(request)
         result = self.cursor.fetchall()
         return self._create_list_of_dict(result)
 
-    def loading_by_params(self, params: dict) -> dict:
+    def loading_by_params(self, params: dict) -> List[Dict[str, Any]]:
         self._make_table()
         request = f'SELECT * FROM {self._db_name} {self._get_where_string(params)} ORDER BY id'
         self.cursor.execute(request)
