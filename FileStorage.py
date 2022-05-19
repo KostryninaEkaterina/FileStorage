@@ -123,5 +123,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.wfile.write('Not Implemented'.encode('utf-8'))
 
 
-server = HTTPServer(("127.0.0.1", 9876), RequestHandler)
-server.serve_forever()
+if __name__ == "__main__":
+    server = HTTPServer(("127.0.0.1", 9876), RequestHandler)
+    print('server started')
+    server.serve_forever()
