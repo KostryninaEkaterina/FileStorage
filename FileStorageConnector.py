@@ -63,9 +63,9 @@ class FileConnector:
     def upload(self, payload=None, meta: Metadata = None, mime_type: str = None) -> dict:
         params = {k: v for k, v in meta._asdict().items() if v} if meta else {}
         content_type = mime_type or (meta and meta.mime_type) or _UNKNOWN_MIME_TYPE
-
-        content = self._upload(params, {'Content_Type': content_type}, payload)['content']
-        code = self._upload(params, {'Content_Type': content_type}, payload)['status-code']
+        result = self._upload(params, {'Content-Type': content_type}, payload)
+        content = result['content']
+        code = result['status-code']
         return {'content': loads(content), 'status-code': code}
 
     def get_by_id(self, file_id) -> List[Dict]:
