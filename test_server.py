@@ -21,7 +21,7 @@ def test_delete_without_parameters():
         with pytest.raises(HTTPError) as excinfo:
             link.delete_without_params()
         the_exeption = excinfo.value.response
-        assert the_exeption.text == 'отсутствуют условия'
+        assert the_exeption.text == 'no conditions'
         assert the_exeption.status_code == 400
 
 
